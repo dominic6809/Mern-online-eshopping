@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Menu, X, LayoutDashboard, Tags, Package, Boxes, Users, ClipboardList } from "lucide-react";

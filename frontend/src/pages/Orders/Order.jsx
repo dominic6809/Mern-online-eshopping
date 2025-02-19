@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { Package, Truck, CreditCard, CheckCircle, AlertCircle, Clock, MapPin, User } from "lucide-react";
-import Messsage from "../../components/Message";
+import { Package, Truck, CreditCard, CheckCircle, AlertCircle, Clock, MapPin } from "lucide-react";
+import Message from "../../components/Message";
 import Loader from "../../components/Loader";
 import {
   useDeliverOrderMutation,
@@ -14,6 +14,9 @@ import {
   useGetPaypalClientIdQuery,
   usePayOrderMutation,
 } from "../../redux/api/orderApiSlice";
+
+import PaymentSuccessModal from "./PaymentSuccessModal"
+
 
 const OrderStatusBadge = ({ isPaid, isDelivered }) => {
   const getStatus = () => {
@@ -38,64 +41,129 @@ const Order = () => {
   const { userInfo } = useSelector((state) => state.auth);
   const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
   const { data: paypal, isLoading: loadingPayPal, error: errorPayPal } = useGetPaypalClientIdQuery();
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  // PayPal initialization code remains the same...
   useEffect(() => {
     if (!errorPayPal && !loadingPayPal && paypal?.clientId) {
       const loadPayPalScript = async () => {
-        paypalDispatch({
-          type: "resetOptions",
-          value: {
-            "client-id": paypal.clientId,
-            currency: "USD",
-          },
-        });
-        paypalDispatch({ type: "setLoadingStatus", value: "pending" });
+        try {
+          paypalDispatch({
+            type: "resetOptions",
+            value: {
+              "client-id": paypal.clientId,
+              currency: "USD",
+            },
+          });
+          paypalDispatch({ type: "setLoadingStatus", value: "pending" });
+        } catch (error) {
+          console.error("PayPal script loading error:", error);
+          toast.error("Failed to load PayPal. Please try again.");
+        }
       };
 
-      if (order && !order.isPaid && !window.paypal) {
+      if (order && !order.isPaid) {
         loadPayPalScript();
       }
     }
   }, [errorPayPal, loadingPayPal, order, paypal, paypalDispatch]);
 
-  // Payment handlers remain the same...
-  const onApprove = (data, actions) => {
-    return actions.order.capture().then(async function (details) {
-      try {
-        await payOrder({ orderId, details });
-        refetch();
-        toast.success("Payment successful! 🎉", {
-          className: "animate-shimmer bg-gradient-to-r from-green-500 to-green-600"
-        });
-      } catch (error) {
-        toast.error(error?.data?.message || error.message);
-      }
-    });
+  const createOrderHandler = (data, actions) => {
+    try {
+      console.log("Creating PayPal order for amount:", order.totalPrice);
+      return actions.order.create({
+        purchase_units: [
+          {
+            amount: {
+              value: order.totalPrice.toString(),
+              currency_code: "USD",
+              breakdown: {
+                item_total: {
+                  currency_code: "USD",
+                  value: order.itemsPrice
+                },
+                shipping: {
+                  currency_code: "USD",
+                  value: order.shippingPrice
+                },
+                tax_total: {
+                  currency_code: "USD",
+                  value: order.taxPrice
+                }
+              }
+            },
+            description: `Order ${orderId}`,
+            items: order.orderItems.map(item => ({
+              name: item.name,
+              unit_amount: {
+                currency_code: "USD",
+                value: item.price.toString()
+              },
+              quantity: item.qty,
+              description: `Product ID: ${item.product}`
+            }))
+          },
+        ],
+        application_context: {
+          shipping_preference: 'NO_SHIPPING',
+          brand_name: 'Your Store Name',
+          cancel_url: `${window.location.origin}/order/${orderId}`,
+          return_url: `${window.location.origin}/order/${orderId}`,
+          user_action: 'PAY_NOW',
+        }
+      });
+    } catch (err) {
+      console.error("Create order error:", err);
+      toast.error("Failed to create PayPal order. Please try again.");
+      return null;
+    }
   };
 
-  const createOrder = (data, actions) => {
-    return actions.order
-      .create({
-        purchase_units: [{ amount: { value: order.totalPrice } }],
-      })
-      .then((orderID) => orderID);
+  const onCancelHandler = () => {
+    toast.info("Payment cancelled. You can try again when ready.");
+  };
+
+  const onApproveHandler = async (data, actions) => {
+    try {
+      const details = await actions.order.capture();
+      console.log("Payment successful. Details:", details);
+  
+      const result = await payOrder({ 
+        orderId, 
+        details: {
+          id: details.id,
+          status: details.status,
+          update_time: details.update_time,
+          payer: {
+            email_address: details.payer.email_address
+          }
+        } 
+      }).unwrap();
+  
+      refetch();
+      setShowSuccessModal(true); // Show the success modal instead of the toast
+    } catch (err) {
+      console.error("Payment error:", err);
+      toast.error(err?.data?.message || err.message || "Payment failed. Please try again.");
+    }
+  };
+
+  const onErrorHandler = (err) => {
+    console.error("PayPal error:", err);
+    toast.error("PayPal encountered an error. Please try again.");
   };
 
   const deliverHandler = async () => {
     try {
       await deliverOrder(orderId);
       refetch();
-      toast.success("Order marked as delivered! 📦", {
-        className: "animate-shimmer bg-gradient-to-r from-blue-500 to-blue-600"
-      });
+      toast.success("Order marked as delivered! 📦");
     } catch (error) {
       toast.error(error?.data?.message || error.message);
     }
   };
 
   if (isLoading) return <Loader />;
-  if (error) return <Messsage variant="danger">{error.data.message}</Messsage>;
+  if (error) return <Message variant="danger">{error.data.message}</Message>;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -122,7 +190,7 @@ const Order = () => {
               
               {order.orderItems.length === 0 ? (
                 <div className="p-6">
-                  <Messsage>Order is empty</Messsage>
+                  <Message>Order is empty</Message>
                 </div>
               ) : (
                 <div className="divide-y divide-gray-200">
@@ -228,9 +296,10 @@ const Order = () => {
                   ) : (
                     <div className="rounded-lg overflow-hidden">
                       <PayPalButtons
-                        createOrder={createOrder}
-                        onApprove={onApprove}
-                        onError={(err) => toast.error(err.message)}
+                        createOrder={createOrderHandler}
+                        onApprove={onApproveHandler}
+                        onError={onErrorHandler}
+                        style={{ layout: "vertical" }}
                       />
                     </div>
                   )}
@@ -261,7 +330,7 @@ const Order = () => {
                     <p className="text-gray-500">{order.paymentMethod}</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3">
                   {order.isPaid ? (
                     <CheckCircle className="w-5 h-5 text-green-600" />
@@ -275,11 +344,41 @@ const Order = () => {
                     </p>
                   </div>
                 </div>
+
+                {order.isPaid && (
+                  <div className="flex items-center gap-3">
+                    <Truck className="w-5 h-5 text-blue-600" />
+                    <div>
+                      <p className="font-medium text-gray-900">Delivery Status</p>
+                      <p className={order.isDelivered ? "text-green-600" : "text-yellow-600"}>
+                        {order.isDelivered 
+                          ? `Delivered on ${new Date(order.deliveredAt).toLocaleDateString()}`
+                          : "In Transit"}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {order.isPaid && order.paymentResult && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <h3 className="text-sm font-medium text-gray-900 mb-2">Payment Details</h3>
+                    <div className="space-y-2 text-sm text-gray-500">
+                      <p>Transaction ID: {order.paymentResult.id}</p>
+                      <p>Status: {order.paymentResult.status}</p>
+                      <p>Email: {order.paymentResult.email_address}</p>
+                      <p>Updated: {new Date(order.paymentResult.update_time).toLocaleString()}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
+      <PaymentSuccessModal 
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+      />
     </div>
   );
 };

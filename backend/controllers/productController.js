@@ -3,7 +3,7 @@ import Product from "../models/productModel.js";
 
 const addProduct = asyncHandler(async (req, res) => {
   try {
-    const { name, description, price, category, quantity, brand } = req.fields;
+    const { name, description, price, category, quantity, brand, variants } = req.fields;
 
     // Validation
     switch (true) {
@@ -21,7 +21,10 @@ const addProduct = asyncHandler(async (req, res) => {
         return res.json({ error: "Quantity is required" });
     }
 
-    const product = new Product({ ...req.fields });
+    const product = new Product({ 
+      ...req.fields,
+      variants: variants ? JSON.parse(variants) : []
+    });
     await product.save();
     res.json(product);
   } catch (error) {
@@ -105,7 +108,7 @@ const fetchProducts = asyncHandler(async (req, res) => {
 
 const fetchProductById = asyncHandler(async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).populate('category');
     if (product) {
       return res.json(product);
     } else {
@@ -176,7 +179,7 @@ const addProductReview = asyncHandler(async (req, res) => {
 
 const fetchTopProducts = asyncHandler(async (req, res) => {
   try {
-    const products = await Product.find({}).sort({ rating: -1 }).limit(4);
+    const products = await Product.find({}).sort({ rating: -1 }).limit(6);
     res.json(products);
   } catch (error) {
     console.error(error);
@@ -186,11 +189,21 @@ const fetchTopProducts = asyncHandler(async (req, res) => {
 
 const fetchNewProducts = asyncHandler(async (req, res) => {
   try {
-    const products = await Product.find().sort({ _id: -1 }).limit(5);
+    const products = await Product.find().sort({ _id: -1 }).limit(6);
     res.json(products);
   } catch (error) {
     console.error(error);
     res.status(400).json(error.message);
+  }
+});
+
+const fetchProductsByCategory = asyncHandler(async (req, res) => {
+  try {
+    const products = await Product.find({ category: req.params.categoryId });
+    res.json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server Error" });
   }
 });
 
@@ -221,4 +234,5 @@ export {
   fetchTopProducts,
   fetchNewProducts,
   filterProducts,
+  fetchProductsByCategory,
 };

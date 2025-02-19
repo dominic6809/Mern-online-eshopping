@@ -20,7 +20,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
     }),
 
     allProducts: builder.query({
-      query: () => `${PRODUCT_URL}/allProducts`,
+      query: () => `${PRODUCT_URL}/allproducts`,
     }),
 
     getProductDetails: builder.query({
@@ -88,6 +88,10 @@ export const productApiSlice = apiSlice.injectEndpoints({
         body: { checked, radio },
       }),
     }),
+    getProductsByCategory: builder.query({
+      query: (categoryId) => `/api/products/category/${categoryId}`,
+      providesTags: ['Products'],
+    }),
   }),
 });
 
@@ -104,4 +108,5 @@ export const {
   useGetNewProductsQuery,
   useUploadProductImageMutation,
   useGetFilteredProductsQuery,
+  useGetProductsByCategoryQuery,
 } = productApiSlice;

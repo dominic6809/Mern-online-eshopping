@@ -161,24 +161,33 @@ const markOrderAsPaid = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
 
-    if (order) {
-      order.isPaid = true;
-      order.paidAt = Date.now();
-      order.paymentResult = {
-        id: req.body.id,
-        status: req.body.status,
-        update_time: req.body.update_time,
-        email_address: req.body.payer.email_address,
-      };
-
-      const updateOrder = await order.save();
-      res.status(200).json(updateOrder);
-    } else {
+    if (!order) {
       res.status(404);
       throw new Error("Order not found");
     }
+
+    // Add validation to prevent double payment
+    if (order.isPaid) {
+      res.status(400);
+      throw new Error("Order is already paid");
+    }
+
+    order.isPaid = true;
+    order.paidAt = Date.now();
+    order.paymentResult = {
+      id: req.body.id,
+      status: req.body.status,
+      update_time: req.body.update_time,
+      email_address: req.body.payer.email_address,
+    };
+
+    const updatedOrder = await order.save();
+    res.status(200).json(updatedOrder);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Payment error:", error);
+    res.status(error.status || 500).json({ 
+      error: error.message || "Error processing payment" 
+    });
   }
 };
 

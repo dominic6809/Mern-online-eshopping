@@ -18,7 +18,8 @@ import {
   Heart,
   Truck,
   Shield,
-  RefreshCw
+  RefreshCw,
+  Check
 } from "lucide-react";
 import moment from "moment";
 import Loader from "../../components/Loader";
@@ -38,6 +39,25 @@ const BenefitCard = ({ icon: Icon, title, description }) => (
   </div>
 );
 
+const ColorVariant = ({ color, isSelected, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`relative w-12 h-12 rounded-full border-2 transition-all duration-200 ${
+      isSelected ? 'border-blue-600 scale-110' : 'border-gray-300 hover:border-gray-400'
+    }`}
+  >
+    <span
+      className="block w-full h-full rounded-full"
+      style={{ backgroundColor: color }}
+    />
+    {isSelected && (
+      <span className="absolute inset-0 flex items-center justify-center">
+        <Check className="w-6 h-6 text-white drop-shadow-md" />
+      </span>
+    )}
+  </button>
+);
+
 const ProductDetails = () => {
   const { id: productId } = useParams();
   const navigate = useNavigate();
@@ -46,6 +66,7 @@ const ProductDetails = () => {
   const [qty, setQty] = useState(1);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [selectedVariant, setSelectedVariant] = useState(0);
 
   const {
     data: product,
@@ -58,6 +79,14 @@ const ProductDetails = () => {
 
   const [createReview, { isLoading: loadingProductReview }] =
     useCreateReviewMutation();
+
+  // Example variants - in practice, these would come from your product data
+  const variants = [
+    { id: 0, color: '#000000', name: 'Black', image: product?.image },
+    { id: 1, color: '#CC0000', name: 'Red', image: product?.image },
+    { id: 2, color: '#0066CC', name: 'Blue', image: product?.image },
+    { id: 3, color: '#4CAF50', name: 'Green', image: product?.image }
+  ];
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -75,7 +104,11 @@ const ProductDetails = () => {
   };
 
   const addToCartHandler = () => {
-    dispatch(addToCart({ ...product, qty }));
+    dispatch(addToCart({ 
+      ...product, 
+      qty,
+      variant: variants[selectedVariant].name 
+    }));
     navigate("/cart");
   };
 
@@ -83,11 +116,11 @@ const ProductDetails = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         <Link
-          to="/"
+          to="/shop"
           className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-8"
         >
           <ChevronLeft className="w-5 h-5 mr-1" />
-          Back to Home
+          Back to Shop
         </Link>
 
         {isLoading ? (
@@ -102,12 +135,27 @@ const ProductDetails = () => {
             <div className="relative">
               <div className="bg-white rounded-2xl p-6 shadow-sm">
                 <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-auto rounded-lg"
+                  src={variants[selectedVariant].image}
+                  alt={`${product.name} - ${variants[selectedVariant].name}`}
+                  className="w-full h-auto rounded-lg mb-6"
                 />
                 <div className="absolute top-8 right-8">
                   <HeartIcon product={product} />
+                </div>
+                
+                {/* Color/Design Variants */}
+                <div className="flex flex-wrap gap-4 justify-center">
+                  {variants.map((variant) => (
+                    <ColorVariant
+                      key={variant.id}
+                      color={variant.color}
+                      isSelected={selectedVariant === variant.id}
+                      onClick={() => setSelectedVariant(variant.id)}
+                    />
+                  ))}
+                </div>
+                <div className="text-center mt-3 text-gray-600">
+                  Selected: {variants[selectedVariant].name}
                 </div>
               </div>
             </div>

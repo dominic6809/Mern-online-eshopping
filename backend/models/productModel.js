@@ -15,6 +15,13 @@ const reviewSchema = mongoose.Schema(
   { timestamps: true }
 );
 
+const variantSchema = new mongoose.Schema({
+  name: String,
+  color: String,
+  image: String,
+  stock: Number
+});
+
 const productSchema = mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -24,6 +31,7 @@ const productSchema = mongoose.Schema(
     category: { type: ObjectId, ref: "Category", required: true },
     description: { type: String, required: true },
     reviews: [reviewSchema],
+    variants: [variantSchema],
     rating: { type: Number, required: true, default: 0 },
     numReviews: { type: Number, required: true, default: 0 },
     price: { type: Number, required: true, default: 0 },

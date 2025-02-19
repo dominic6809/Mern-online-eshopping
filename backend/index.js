@@ -30,7 +30,13 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/orders", orderRoutes);
 
 app.get("/api/config/paypal", (req, res) => {
-  res.send({ clientId: process.env.PAYPAL_CLIENT_ID });
+  const clientId = process.env.PAYPAL_CLIENT_ID;
+  if (!clientId) {
+    return res.status(500).json({ 
+      message: "PayPal client ID is not configured" 
+    });
+  }
+  res.json({ clientId });
 });
 
 

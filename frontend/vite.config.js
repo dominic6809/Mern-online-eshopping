@@ -11,6 +11,9 @@ export default defineConfig({
     tailwindcss(),
     flowbitePlugin,
   ],
+  optimizeDeps: {
+    include: ['@paypal/react-paypal-js'],
+  },
   server: {
     proxy: {
       "/api/": "http://localhost:5000",

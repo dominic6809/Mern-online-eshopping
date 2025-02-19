@@ -85,7 +85,7 @@ const Shop = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 bg-slate-100">
+    <div className="min-w-[100vh]container px-5 py-8 bg-slate-100">
       {/* Header Section */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Shop</h1>

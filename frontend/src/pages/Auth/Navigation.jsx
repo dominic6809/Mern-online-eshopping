@@ -15,7 +15,8 @@ import {
   ChevronDown, 
   ChevronUp, 
   Menu,
-  X 
+  X,
+  User
 } from "lucide-react";
 import FavoritesCount from "../Products/FavoritesCount";
 
@@ -37,10 +38,6 @@ const NavItem = ({ to, icon: Icon, label, badge, onClick }) => (
 
 const ADMIN_MENU_ITEMS = [
   { to: "/admin/dashboard", label: "Dashboard" },
-  { to: "/admin/productlist", label: "Products" },
-  { to: "/admin/categorylist", label: "Category" },
-  { to: "/admin/orderlist", label: "Orders" },
-  { to: "/admin/userlist", label: "Users" },
 ];
 
 const Navigation = () => {
@@ -91,7 +88,7 @@ const Navigation = () => {
       {/* Menu Button */}
       <button
         onClick={toggleNav}
-        className="fixed top-6 left-6 z-50 p-2 rounded-lg bg-white hover:bg-gray-100 transition-colors shadow-md"
+        className="fixed top-0 left-0 z-50 p-2 rounded-lg bg-white hover:bg-gray-100 transition-colors shadow-md"
       >
         <Menu className="w-6 h-6 text-gray-700" />
       </button>
@@ -99,7 +96,7 @@ const Navigation = () => {
       {/* Navigation Sidebar */}
       <nav 
         className={`fixed h-[calc(100vh-16px)] w-64 m-2 bg-slate-100 rounded-lg shadow-lg transition-all duration-300 ease-in-out py-6 px-4 flex flex-col justify-between z-50 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 top-0 bottom-0 ${
-          isNavOpen ? "left-4" : "-left-64"
+          isNavOpen ? "left-0" : "-left-64"
         }`}
       >
         <div className="relative">
@@ -125,7 +122,7 @@ const Navigation = () => {
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
               >
-                <span className="text-sm font-medium truncate">{userInfo.username}</span>
+                <span className="text-sm font-medium truncate" icon={User}>{userInfo.username}</span>
                 {dropdownOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </button>
 

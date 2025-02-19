@@ -73,6 +73,10 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <PayPalScriptProvider>
+    {/* options={{
+        clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID,
+        currency: "USD"
+      }} */}
       <RouterProvider router={router} />
     </PayPalScriptProvider>
   </Provider>
