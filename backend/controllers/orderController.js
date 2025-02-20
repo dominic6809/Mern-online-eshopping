@@ -210,6 +210,30 @@ const markOrderAsDelivered = async (req, res) => {
   }
 };
 
+const deleteOrder = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      res.status(404);
+      throw new Error("Order not found");
+    }
+
+    // Optional: Add check to prevent deletion of paid orders
+    if (order.isPaid) {
+      res.status(400);
+      throw new Error("Cannot delete paid orders");
+    }
+
+    await order.deleteOne();
+    res.status(200).json({ message: "Order deleted successfully" });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ 
+      error: error.message || "Error deleting order" 
+    });
+  }
+};
+
 export {
   createOrder,
   getAllOrders,
@@ -220,4 +244,5 @@ export {
   findOrderById,
   markOrderAsPaid,
   markOrderAsDelivered,
+  deleteOrder,
 };

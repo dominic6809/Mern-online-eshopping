@@ -11,6 +11,7 @@ import {
   findOrderById,
   markOrderAsPaid,
   markOrderAsDelivered,
+  deleteOrder,
 } from "../controllers/orderController.js";
 
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
@@ -19,6 +20,7 @@ router
   .route("/")
   .post(authenticate, createOrder)
   .get(authenticate, authorizeAdmin, getAllOrders);
+  router.delete('/:id', authenticate, authorizeAdmin, deleteOrder);
 
 router.route("/mine").get(authenticate, getUserOrders);
 router.route("/total-orders").get(countTotalOrders);

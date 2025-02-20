@@ -88,7 +88,7 @@ const Navigation = () => {
       {/* Menu Button */}
       <button
         onClick={toggleNav}
-        className="fixed top-0 left-0 z-50 p-2 rounded-lg bg-white hover:bg-gray-100 transition-colors shadow-md"
+        className="fixed top-2 left-1 z-50 p-2 rounded-lg bg-white hover:bg-gray-100 transition-colors shadow-md"
       >
         <Menu className="w-6 h-6 text-gray-700" />
       </button>
@@ -96,7 +96,7 @@ const Navigation = () => {
       {/* Navigation Sidebar */}
       <nav 
         className={`fixed h-[calc(100vh-16px)] w-64 m-2 bg-slate-100 rounded-lg shadow-lg transition-all duration-300 ease-in-out py-6 px-4 flex flex-col justify-between z-50 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 top-0 bottom-0 ${
-          isNavOpen ? "left-0" : "-left-64"
+          isNavOpen ? "left-0" : "-left-66"
         }`}
       >
         <div className="relative">

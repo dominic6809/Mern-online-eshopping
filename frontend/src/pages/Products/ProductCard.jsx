@@ -30,7 +30,6 @@ const ProductCard = ({ p }) => {
       autoClose: 2000,
     });
 
-    // Reset to cart icon after 2 seconds
     setTimeout(() => {
       setShowCheck(false);
     }, 2000);
@@ -38,11 +37,15 @@ const ProductCard = ({ p }) => {
 
   return (
     <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
-      <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl bg-gray-100">
         <img
           src={p.image}
           alt={p.name}
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+          className="absolute inset-0 w-full h-full object-contain transform-gpu group-hover:scale-105 transition-transform duration-300"
+          onError={(e) => {
+            e.target.src = '/images/placeholder.png';
+            e.target.onerror = null;
+          }}
         />
         
         <div className="absolute top-3 right-3 z-10">
@@ -76,7 +79,7 @@ const ProductCard = ({ p }) => {
             </h3>
           </Link>
           <span className="text-xl font-bold text-blue-600 whitespace-nowrap">
-            ${p?.price?.toFixed(2)}
+            Ksh {p?.price?.toFixed(2)}
           </span>
         </div>
 

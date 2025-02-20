@@ -10,9 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@paypal/react-paypal-js": "^8.8.2",
     "@reduxjs/toolkit": "^2.5.1",
     "@tailwindcss/vite": "^4.0.6",
+    "aos": "^2.3.4",
     "apexcharts": "^4.4.0",
     "axios": "^1.7.9",
     "canvas-confetti": "^1.9.3",

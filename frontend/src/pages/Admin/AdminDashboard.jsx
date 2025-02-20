@@ -46,7 +46,7 @@ const AdminDashboard = () => {
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'KSH',
     }).format(value);
   };
 

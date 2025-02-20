@@ -2,6 +2,7 @@
 import React from 'react';
 import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { About, FAQ, Contact} from './MoreLinks'
 
 const Footer = () => {
   return (
@@ -54,7 +55,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center space-x-2">
                 <Phone size={16} />
-                <span>+1 234 567 8900</span>
+                <span>+254 730 200 500</span>
               </li>
               <li className="flex items-center space-x-2">
                 <MapPin size={16} />

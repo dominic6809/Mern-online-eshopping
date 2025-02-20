@@ -218,7 +218,7 @@ const Order = () => {
                       </div>
                       <div className="ml-6">
                         <p className="text-lg font-medium text-gray-900">
-                          ${(item.qty * item.price).toFixed(2)}
+                          $ {(item.qty * item.price).toFixed(2)}
                         </p>
                       </div>
                     </div>
@@ -270,7 +270,7 @@ const Order = () => {
               <div className="space-y-4">
                 <div className="flex justify-between text-gray-500">
                   <span>Subtotal</span>
-                  <span className="text-gray-900">${order.itemsPrice}</span>
+                  <span className="text-gray-900">$ {order.itemsPrice}</span>
                 </div>
                 <div className="flex justify-between text-gray-500">
                   <span>Shipping</span>

@@ -26,34 +26,34 @@ const Header = () => {
     );
   }
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Featured Products Grid */}
-        {/* <div className="hidden xl:block w-full lg:w-1/2">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-800">Featured Products</h2>
-          <div className="grid grid-cols-2 gap-4">
-            {data?.map((product) => (
-              <div 
-                key={product._id} 
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
-              >
-                <SmallProduct product={product} />
-              </div>
-            ))}
-          </div>
-        </div> */}
+  // return (
+  //   // <div className="container mx-auto px-4 py-8">
+  //   //   <div className="flex flex-col lg:flex-row gap-8">
+  //       {/* Featured Products Grid */}
+  //       {/* <div className="hidden xl:block w-full lg:w-1/2">
+  //         <h2 className="text-2xl font-semibold mb-6 text-gray-800">Featured Products</h2>
+  //         <div className="grid grid-cols-2 gap-4">
+  //           {data?.map((product) => (
+  //             <div 
+  //               key={product._id} 
+  //               className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
+  //             >
+  //               <SmallProduct product={product} />
+  //             </div>
+  //           ))}
+  //         </div>
+  //       </div> */}
 
-        {/* Product Carousel */}
-        {/* <div className="w-full lg:w-1/2">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-800 xl:hidden">Featured Products</h2>
-          <div className="bg-white rounded-lg shadow-sm">
-            <ProductCarousel />
-          </div>
-        </div> */}
-      </div>
-    </div>
-  );
+  //       {/* Product Carousel */}
+  //       {/* <div className="w-full lg:w-1/2">
+  //         <h2 className="text-2xl font-semibold mb-6 text-gray-800 xl:hidden">Featured Products</h2>
+  //         <div className="bg-white rounded-lg shadow-sm">
+  //           <ProductCarousel />
+  //         </div>
+  //       </div> */}
+  //   //   </div>
+  //   // </div>
+  // );
 };
 
 export default Header;

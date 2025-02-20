@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
+import 'aos/dist/aos.css';
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import { Route, RouterProvider, createRoutesFromElements } from "react-router";
@@ -36,6 +37,8 @@ import OrderList from "./pages/Admin/OrderList.jsx";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
 
+import { About, Contact, FAQ } from "./components/MoreLinks";
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
@@ -46,6 +49,9 @@ const router = createBrowserRouter(
       <Route path="/product/:id" element={<ProductDetails />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/shop" element={<Shop />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/faq" element={<FAQ />} />
 
       {/* Registered users */}
       <Route path="" element={<PrivateRoute />}>
